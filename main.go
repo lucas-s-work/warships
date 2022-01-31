@@ -34,7 +34,7 @@ func main() {
 	ctx := graphics.CreateContext(window)
 	ctxSync := ctx.GetSync()
 
-	g := game.CreateGame(ctx)
+	g := game.CreateGame(ctx, window)
 
 	doneSync := startTick(g, ctxSync)
 	ticker := time.NewTicker(updateInterval)
