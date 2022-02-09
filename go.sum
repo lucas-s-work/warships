@@ -10,6 +10,8 @@ github.com/lucas-s-work/gopengl3 v0.0.0-20220129062847-d6aa3eb4f7ad h1:k/lR+T8Tg
 github.com/lucas-s-work/gopengl3 v0.0.0-20220129062847-d6aa3eb4f7ad/go.mod h1:gZ8GYjAxGhq4Rgl8y8cw2yDrMJHICPptxAeIEJibeiM=
 github.com/lucas-s-work/gopengl3 v0.0.0-20220129235213-95c0805559ba h1:2guS2RQwbACIDqc2A6g9MgW1WvYxViQO5zI2sa/88TM=
 github.com/lucas-s-work/gopengl3 v0.0.0-20220129235213-95c0805559ba/go.mod h1:gZ8GYjAxGhq4Rgl8y8cw2yDrMJHICPptxAeIEJibeiM=
+github.com/lucas-s-work/gopengl3 v0.0.0-20220209205108-8acb38926f20 h1:w3Lbx+OK2GnB9gRwO3xEoQinBW3FojmM4RQgIzPbIwQ=
+github.com/lucas-s-work/gopengl3 v0.0.0-20220209205108-8acb38926f20/go.mod h1:gZ8GYjAxGhq4Rgl8y8cw2yDrMJHICPptxAeIEJibeiM=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f h1:FO4MZ3N56GnxbqxGKqh+YTzUWQ2sDwtFQEZgLOxh9Jc=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

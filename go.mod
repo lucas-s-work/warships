@@ -4,8 +4,10 @@ go 1.18
 
 require (
 	github.com/go-gl/mathgl v1.0.0
-	github.com/lucas-s-work/gopengl3 v0.0.0-20220129235213-95c0805559ba
+	github.com/lucas-s-work/gopengl3 v0.0.0-20220209205108-8acb38926f20
 )
+
+replace github.com/lucas-s-work/gopengl3 => ../gopengl3
 
 require (
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect

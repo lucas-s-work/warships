@@ -18,6 +18,8 @@ type Game struct {
 	background  *renderers.Translational
 	entities    []*entityState
 	newEntities []*entityState
+
+	player *Player
 }
 
 type entityState struct {
@@ -35,6 +37,10 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 
 	b := ship.CreateBattleship(g)
 	g.AttachEntity(b)
+
+	p := CreatePlayer(window)
+	p.selectedEntities[0] = b
+	g.player = p
 
 	return g
 }
@@ -89,6 +95,8 @@ func (g *Game) Tick() {
 			s.e.Tick()
 		}
 	}
+
+	g.player.Tick()
 
 	g.entities = append(g.entities, g.newEntities...)
 	g.newEntities = []*entityState{}

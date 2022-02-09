@@ -19,6 +19,8 @@ type Entity interface {
 	Position() mgl32.Vec2
 	SetPosition(mgl32.Vec2)
 	InBounds(mgl32.Vec2) bool
+	KeyPressed(key string)
+	MousePressed(key string, pos mgl32.Vec2)
 }
 
 type BaseEntity struct {
@@ -97,4 +99,12 @@ func (e *BaseEntity) BoundCenter() mgl32.Vec2 {
 
 func (e *BaseEntity) Center() mgl32.Vec2 {
 	return e.position.Add(e.BoundCenter())
+}
+
+func (*BaseEntity) KeyPressed(key string) {
+
+}
+
+func (*BaseEntity) MousePressed(key string, pos mgl32.Vec2) {
+
 }

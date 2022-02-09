@@ -1,7 +1,6 @@
 package ship
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -67,8 +66,21 @@ func (b *Battleship) Init() {
 func (b *Battleship) Tick() {
 	velocity := mgl32.Vec2{b.speed * float32(math.Cos(b.angle)), b.speed * float32(math.Sin(b.angle))}
 	b.SetPosition(b.Position().Add(velocity))
-	fmt.Println(b.Position())
 	b.SetRotation(float32(b.angle-math.Pi/2), b.BoundCenter())
-	b.angle += 0.005
-	b.speed += 0.01
+}
+
+func (b *Battleship) KeyPressed(key string) {
+	if key == "a" {
+		b.angle += 0.005
+	} else if key == "d" {
+		b.angle -= 0.005
+	} else if key == "w" {
+		b.speed += 0.05
+	} else if key == "s" {
+		b.speed -= 0.05
+	}
+}
+
+func (b *Battleship) MousePressed(key string, pos mgl32.Vec2) {
+
 }
