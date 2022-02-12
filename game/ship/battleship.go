@@ -1,8 +1,6 @@
 package ship
 
 import (
-	"math"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/util"
@@ -10,7 +8,7 @@ import (
 )
 
 type Battleship struct {
-	*world.BaseEntity
+	*BaseShip
 	shipSprite *util.ListNode
 	speed      float32
 	angle      float64
@@ -21,6 +19,9 @@ const (
 	BattleshipWidth      = 31
 	BattleshipHeight     = 209
 	BattleshipComponents = 4
+
+	BattleshipMaxSpeed = 1.5
+	BattleshipTurnRate = 0.005
 )
 
 func CreateBattleship(w world.World) *Battleship {
@@ -37,10 +38,12 @@ func CreateBattleship(w world.World) *Battleship {
 		},
 	)
 
+	s := CreateBaseShip(e, BattleshipMaxSpeed, BattleshipTurnRate)
+
 	return &Battleship{
-		BaseEntity: e,
-		speed:      0.5,
-		angle:      0,
+		BaseShip: s,
+		speed:    0,
+		angle:    0,
 	}
 }
 
@@ -64,20 +67,19 @@ func (b *Battleship) Init() {
 }
 
 func (b *Battleship) Tick() {
-	velocity := mgl32.Vec2{b.speed * float32(math.Cos(b.angle)), b.speed * float32(math.Sin(b.angle))}
-	b.SetPosition(b.Position().Add(velocity))
-	b.SetRotation(float32(b.angle-math.Pi/2), b.BoundCenter())
+	b.UpdatePosition()
 }
 
 func (b *Battleship) KeyPressed(key string) {
-	if key == "a" {
-		b.angle += 0.005
-	} else if key == "d" {
-		b.angle -= 0.005
-	} else if key == "w" {
-		b.speed += 0.05
-	} else if key == "s" {
-		b.speed -= 0.05
+	switch key {
+	case "w":
+		b.IncreaseSpeed(world.UP)
+	case "s":
+		b.IncreaseSpeed(world.DOWN)
+	case "d":
+		b.DecreaseTurn()
+	case "a":
+		b.IncreaseTurn()
 	}
 }
 

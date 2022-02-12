@@ -10,6 +10,15 @@ const (
 	SHIP_LAYER       = 1
 )
 
+type Dir int8
+
+const (
+	UP    Dir = 1
+	DOWN  Dir = 2
+	LEFT  Dir = 3
+	RIGHT Dir = 4
+)
+
 type Entity interface {
 	Init()
 	Delete()
