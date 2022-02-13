@@ -42,7 +42,6 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 	g.AttachEntity(b2)
 
 	p := CreatePlayer(window, g)
-	p.selectedEntities[0] = b
 	g.player = p
 
 	return g
@@ -73,6 +72,12 @@ func (g *Game) EntitiesUnderPoint(point mgl32.Vec2) []world.Entity {
 	}
 
 	return entities
+}
+
+func (g *Game) SetCamera(p mgl32.Vec2) {
+	for _, e := range g.entities {
+		e.e.SetCamera(p)
+	}
 }
 
 func (g *Game) createBackground() {

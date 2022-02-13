@@ -28,16 +28,17 @@ type Entity interface {
 	Renderer() *renderers.Rotational
 	Position() mgl32.Vec2
 	SetPosition(mgl32.Vec2)
+	SetCamera(mgl32.Vec2)
 	InBounds(mgl32.Vec2) bool
 	KeyPressed(key glfw.Key)
 	MousePressed(key glfw.MouseButton, pos mgl32.Vec2)
 }
 
 type BaseEntity struct {
-	renderer *renderers.Rotational
-	position mgl32.Vec2
-	world    World
-	bounds   mgl32.Vec2
+	renderer         *renderers.Rotational
+	position, camera mgl32.Vec2
+	world            World
+	bounds           mgl32.Vec2
 }
 
 func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, size int, bounds mgl32.Vec2) *BaseEntity {
@@ -83,7 +84,16 @@ func (e *BaseEntity) InBounds(v mgl32.Vec2) bool {
 
 func (e *BaseEntity) SetPosition(p mgl32.Vec2) {
 	e.position = p
-	e.renderer.SetTranslation(p.Sub(e.BoundCenter()))
+	e.setTranslation()
+}
+
+func (e *BaseEntity) SetCamera(p mgl32.Vec2) {
+	e.camera = p
+	e.setTranslation()
+}
+
+func (e *BaseEntity) setTranslation() {
+	e.renderer.SetTranslation(e.position.Sub(e.BoundCenter()).Sub(e.camera))
 }
 
 func (e *BaseEntity) SetRotation(angle float32, center mgl32.Vec2) {
