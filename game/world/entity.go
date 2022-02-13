@@ -9,6 +9,7 @@ import (
 const (
 	BACKGROUND_LAYER = 0
 	SHIP_LAYER       = 1
+	PROJECTILE_LAYER = 2
 )
 
 type Dir int8
@@ -25,12 +26,15 @@ type Entity interface {
 	Delete()
 	Tick()
 	OnClick()
+	SetID(int)
+	GetID() int
 	Renderer() *renderers.Rotational
 	Position() mgl32.Vec2
 	SetPosition(mgl32.Vec2)
 	SetCamera(mgl32.Vec2)
 	InBounds(mgl32.Vec2) bool
 	KeyPressed(key glfw.Key)
+	KeyTapped(key glfw.Key)
 	MousePressed(key glfw.MouseButton, pos mgl32.Vec2)
 }
 
@@ -39,6 +43,7 @@ type BaseEntity struct {
 	position, camera mgl32.Vec2
 	world            World
 	bounds           mgl32.Vec2
+	id               int
 }
 
 func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, size int, bounds mgl32.Vec2) *BaseEntity {
@@ -46,6 +51,7 @@ func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, s
 		world:    w,
 		bounds:   bounds,
 		position: position,
+		camera:   w.CameraPosition(),
 	}
 	w.Context().AddJob(func() {
 		r, err := renderers.CreateRotationalRenderer(w.Window(), texture, int32(size)*6)
@@ -61,16 +67,23 @@ func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, s
 	return entity
 }
 
-func (e *BaseEntity) Init() {}
+func (e *BaseEntity) StartingPosition() mgl32.Vec2 {
+	return e.position.Sub(e.BoundCenter()).Sub(e.camera)
+}
 
-func (e *BaseEntity) Tick() {
+func (e *BaseEntity) SetID(id int) {
+	e.id = id
+}
+
+func (e *BaseEntity) GetID() int {
+	return e.id
 }
 
 func (e *BaseEntity) Delete() {
-	e.renderer.Delete()
-}
-
-func (e *BaseEntity) OnClick() {
+	e.world.DetachEntity(e)
+	e.world.Context().AddJob(func() {
+		e.renderer.Delete()
+	})
 }
 
 func (e *BaseEntity) InBounds(v mgl32.Vec2) bool {
@@ -113,20 +126,16 @@ func (e *BaseEntity) World() World {
 }
 
 func (e *BaseEntity) BoundCenter() mgl32.Vec2 {
-	x := 0.5 * (e.bounds.X())
-	y := 0.5 * (e.bounds.Y())
-
-	return mgl32.Vec2{x, y}
+	return e.bounds.Mul(0.5)
 }
 
 func (e *BaseEntity) Center() mgl32.Vec2 {
 	return e.position.Add(e.BoundCenter())
 }
 
-func (*BaseEntity) KeyPressed(key glfw.Key) {
-
-}
-
-func (*BaseEntity) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {
-
-}
+func (e *BaseEntity) Init()                                           {}
+func (e *BaseEntity) Tick()                                           {}
+func (*BaseEntity) KeyPressed(key glfw.Key)                           {}
+func (*BaseEntity) KeyTapped(key glfw.Key)                            {}
+func (*BaseEntity) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {}
+func (*BaseEntity) OnClick()                                          {}

@@ -36,13 +36,13 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 	}
 	g.createBackground()
 
+	p := CreatePlayer(window, g)
+	g.player = p
+
 	b := ship.CreateBattleship(g, mgl32.Vec2{50, 50})
 	b2 := ship.CreateBattleship(g, mgl32.Vec2{100, 200})
 	g.AttachEntity(b)
 	g.AttachEntity(b2)
-
-	p := CreatePlayer(window, g)
-	g.player = p
 
 	return g
 }
@@ -62,10 +62,17 @@ func (g *Game) AttachEntity(e world.Entity) {
 	})
 }
 
+func (g *Game) DetachEntity(e world.Entity) {
+	g.entities[e.GetID()] = nil
+}
+
 func (g *Game) EntitiesUnderPoint(point mgl32.Vec2) []world.Entity {
 	entities := make([]world.Entity, 0)
 
 	for _, e := range g.entities {
+		if e == nil {
+			continue
+		}
 		if e.e.InBounds(point) {
 			entities = append(entities, e.e)
 		}
@@ -76,7 +83,9 @@ func (g *Game) EntitiesUnderPoint(point mgl32.Vec2) []world.Entity {
 
 func (g *Game) SetCamera(p mgl32.Vec2) {
 	for _, e := range g.entities {
-		e.e.SetCamera(p)
+		if e != nil {
+			e.e.SetCamera(p)
+		}
 	}
 }
 
@@ -100,6 +109,10 @@ func (g *Game) createBackground() {
 	})
 }
 
+func (g *Game) CameraPosition() mgl32.Vec2 {
+	return g.player.CameraPosition()
+}
+
 func (g *Game) Tick() {
 	// Entities are given the first tick to initialize
 	// This allows graphics synchronization and any interactinos
@@ -118,6 +131,14 @@ func (g *Game) Tick() {
 
 	g.player.Tick()
 
-	g.entities = append(g.entities, g.newEntities...)
+	g.attachNewEntities()
+}
+
+func (g *Game) attachNewEntities() {
+	for _, e := range g.newEntities {
+		e.e.SetID(len(g.entities))
+		g.entities = append(g.entities, e)
+	}
+
 	g.newEntities = []*entityState{}
 }

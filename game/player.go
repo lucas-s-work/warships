@@ -24,6 +24,14 @@ func CreatePlayer(window *gl.Window, game *Game) *Player {
 }
 
 /*
+Camera handling
+*/
+
+func (p *Player) CameraPosition() mgl32.Vec2 {
+	return p.camera.Position()
+}
+
+/*
 Entity selection and interaction
 */
 
@@ -44,6 +52,7 @@ var keys = []glfw.Key{
 	glfw.KeyDown,
 	glfw.KeyLeft,
 	glfw.KeyRight,
+	glfw.KeySpace,
 }
 
 func (p *Player) checkInputs() {
@@ -51,6 +60,10 @@ func (p *Player) checkInputs() {
 		if gl.CheckKeyPressed(k) {
 			p.keyPressSelectedEntities(k)
 			p.handleKeyPress(k)
+		}
+
+		if gl.CheckKeyTapped(k) {
+			p.keyTapSelectedEntities(k)
 		}
 	}
 
@@ -64,6 +77,14 @@ func (p *Player) keyPressSelectedEntities(key glfw.Key) {
 	for _, e := range p.selectedEntities {
 		if e != nil {
 			e.KeyPressed(key)
+		}
+	}
+}
+
+func (p *Player) keyTapSelectedEntities(key glfw.Key) {
+	for _, e := range p.selectedEntities {
+		if e != nil {
+			e.KeyTapped(key)
 		}
 	}
 }

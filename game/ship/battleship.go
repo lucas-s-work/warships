@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/util"
+	"github.com/lucas-s-work/warships/game/projectile"
 	"github.com/lucas-s-work/warships/game/world"
 )
 
@@ -49,6 +50,8 @@ func CreateBattleship(w world.World, position mgl32.Vec2) *Battleship {
 
 func (b *Battleship) Init() {
 	w := b.World()
+
+	startingPos := b.StartingPosition()
 	w.Context().AddJob(func() {
 		v, t, err := graphics.Rectangle(0, 0, BattleshipWidth, BattleshipHeight, 0, 0, BattleshipWidth, BattleshipHeight, b.Renderer().Texture())
 		if err != nil {
@@ -59,6 +62,7 @@ func (b *Battleship) Init() {
 		if err != nil {
 			panic(err)
 		}
+		r.SetTranslation(startingPos)
 		b.shipSprite = a
 		r.Update()
 	})
@@ -78,6 +82,13 @@ func (b *Battleship) KeyPressed(key glfw.Key) {
 		b.DecreaseTurn()
 	case glfw.KeyA:
 		b.IncreaseTurn()
+	}
+}
+
+func (b *Battleship) KeyTapped(key glfw.Key) {
+	if key == glfw.KeySpace {
+		p := projectile.CreateBullet(b.World(), mgl32.Vec3{5, 5, 1}, b.Position())
+		b.World().AttachEntity(p)
 	}
 }
 
