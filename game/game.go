@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
@@ -35,10 +36,12 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 	}
 	g.createBackground()
 
-	b := ship.CreateBattleship(g)
+	b := ship.CreateBattleship(g, mgl32.Vec2{50, 50})
+	b2 := ship.CreateBattleship(g, mgl32.Vec2{100, 200})
 	g.AttachEntity(b)
+	g.AttachEntity(b2)
 
-	p := CreatePlayer(window)
+	p := CreatePlayer(window, g)
 	p.selectedEntities[0] = b
 	g.player = p
 
@@ -58,6 +61,18 @@ func (g *Game) AttachEntity(e world.Entity) {
 		initialized: false,
 		e:           e,
 	})
+}
+
+func (g *Game) EntitiesUnderPoint(point mgl32.Vec2) []world.Entity {
+	entities := make([]world.Entity, 0)
+
+	for _, e := range g.entities {
+		if e.e.InBounds(point) {
+			entities = append(entities, e.e)
+		}
+	}
+
+	return entities
 }
 
 func (g *Game) createBackground() {

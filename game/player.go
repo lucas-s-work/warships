@@ -1,6 +1,9 @@
 package game
 
 import (
+	"fmt"
+
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/warships/game/world"
 )
@@ -9,33 +12,33 @@ const MaxPlayerEntites = 64
 
 type Player struct {
 	selectedEntities []world.Entity
+	game             *Game
 	window           *gl.Window
 }
 
-func CreatePlayer(window *gl.Window) *Player {
+func CreatePlayer(window *gl.Window, game *Game) *Player {
 	return &Player{
 		selectedEntities: make([]world.Entity, MaxPlayerEntites),
 		window:           window,
+		game:             game,
 	}
 }
 
 func (p *Player) checkInputs() {
-	keys := gl.CheckKeys([]string{"w", "a", "s", "d"})
-	if keys[0] {
-		p.keyPressSelectedEntities("w")
+	keys := []glfw.Key{glfw.KeyW, glfw.KeyA, glfw.KeyD, glfw.KeyS}
+	for _, k := range keys {
+		if gl.CheckKeyPressed(k) {
+			p.keyPressSelectedEntities(k)
+		}
 	}
-	if keys[1] {
-		p.keyPressSelectedEntities("a")
-	}
-	if keys[2] {
-		p.keyPressSelectedEntities("s")
-	}
-	if keys[3] {
-		p.keyPressSelectedEntities("d")
+
+	mousePos, _ := gl.GetMouseInfo()
+	if gl.CheckMouseTapped(glfw.MouseButton1) {
+		fmt.Println(p.game.EntitiesUnderPoint(mousePos))
 	}
 }
 
-func (p *Player) keyPressSelectedEntities(key string) {
+func (p *Player) keyPressSelectedEntities(key glfw.Key) {
 	for _, e := range p.selectedEntities {
 		if e != nil {
 			e.KeyPressed(key)

@@ -43,12 +43,12 @@ func CreateBaseShip(baseEntity *world.BaseEntity, maxSpeed float64, maxTurnRate 
 }
 
 func (b *BaseShip) Velocity() mgl32.Vec2 {
-	return mgl32.Vec2{float32(b.speed * math.Cos(b.angle)), float32(b.speed * math.Sin(b.angle))}
+	return mgl32.Vec2{-float32(b.speed * math.Sin(b.angle)), float32(b.speed * math.Cos(b.angle))}
 }
 
 func (b *BaseShip) UpdatePosition() {
 	b.SetPosition(b.Position().Add(b.Velocity()))
-	b.SetRotation(float32(b.angle-math.Pi/2), b.BoundCenter())
+	b.SetRotation(float32(b.angle), b.BoundCenter())
 }
 
 func (b *BaseShip) IncreaseSpeed(dir world.Dir) {
@@ -86,4 +86,13 @@ func (b *BaseShip) IncreaseTurn() {
 
 func (b *BaseShip) DecreaseTurn() {
 	b.angle -= b.MaxTurnRate * b.TurnFactor()
+}
+
+func (b *BaseShip) InBounds(p mgl32.Vec2) bool {
+	bc := b.Position()
+	p = p.Sub(bc)
+	p = mgl32.Rotate2D(-float32(b.angle)).Mul2x1(p)
+	p = p.Add(bc)
+
+	return b.BaseEntity.InBounds(p)
 }

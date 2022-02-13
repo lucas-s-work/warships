@@ -1,6 +1,7 @@
 package ship
 
 import (
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/util"
@@ -24,15 +25,14 @@ const (
 	BattleshipTurnRate = 0.005
 )
 
-func CreateBattleship(w world.World) *Battleship {
+func CreateBattleship(w world.World, position mgl32.Vec2) *Battleship {
 	e := world.CreateBaseEntity(
 		w,
+		position,
 		BattleshipTexture,
 		world.SHIP_LAYER,
 		BattleshipComponents,
-		mgl32.Vec4{
-			0,
-			0,
+		mgl32.Vec2{
 			BattleshipWidth,
 			BattleshipHeight,
 		},
@@ -50,8 +50,6 @@ func CreateBattleship(w world.World) *Battleship {
 func (b *Battleship) Init() {
 	w := b.World()
 	w.Context().AddJob(func() {
-		b.SetPosition(mgl32.Vec2{50, 50})
-
 		v, t, err := graphics.Rectangle(0, 0, BattleshipWidth, BattleshipHeight, 0, 0, BattleshipWidth, BattleshipHeight, b.Renderer().Texture())
 		if err != nil {
 			panic(err)
@@ -70,19 +68,19 @@ func (b *Battleship) Tick() {
 	b.UpdatePosition()
 }
 
-func (b *Battleship) KeyPressed(key string) {
+func (b *Battleship) KeyPressed(key glfw.Key) {
 	switch key {
-	case "w":
+	case glfw.KeyW:
 		b.IncreaseSpeed(world.UP)
-	case "s":
+	case glfw.KeyS:
 		b.IncreaseSpeed(world.DOWN)
-	case "d":
+	case glfw.KeyD:
 		b.DecreaseTurn()
-	case "a":
+	case glfw.KeyA:
 		b.IncreaseTurn()
 	}
 }
 
-func (b *Battleship) MousePressed(key string, pos mgl32.Vec2) {
+func (b *Battleship) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {
 
 }

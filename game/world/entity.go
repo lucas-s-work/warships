@@ -1,6 +1,7 @@
 package world
 
 import (
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
 )
@@ -28,21 +29,22 @@ type Entity interface {
 	Position() mgl32.Vec2
 	SetPosition(mgl32.Vec2)
 	InBounds(mgl32.Vec2) bool
-	KeyPressed(key string)
-	MousePressed(key string, pos mgl32.Vec2)
+	KeyPressed(key glfw.Key)
+	MousePressed(key glfw.MouseButton, pos mgl32.Vec2)
 }
 
 type BaseEntity struct {
 	renderer *renderers.Rotational
 	position mgl32.Vec2
 	world    World
-	bounds   mgl32.Vec4
+	bounds   mgl32.Vec2
 }
 
-func CreateBaseEntity(w World, texture string, layer int, size int, bounds mgl32.Vec4) *BaseEntity {
+func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, size int, bounds mgl32.Vec2) *BaseEntity {
 	entity := &BaseEntity{
-		world:  w,
-		bounds: bounds,
+		world:    w,
+		bounds:   bounds,
+		position: position,
 	}
 	w.Context().AddJob(func() {
 		r, err := renderers.CreateRotationalRenderer(w.Window(), texture, int32(size)*6)
@@ -50,6 +52,7 @@ func CreateBaseEntity(w World, texture string, layer int, size int, bounds mgl32
 			panic(err)
 		}
 		w.Context().Attach(r, layer)
+		r.SetTranslation(position)
 
 		entity.renderer = r
 	})
@@ -71,9 +74,9 @@ func (e *BaseEntity) OnClick() {
 
 func (e *BaseEntity) InBounds(v mgl32.Vec2) bool {
 	b := e.bounds
-	av := v.Sub(e.position)
-	inX := (av.X() >= b.X()) && (av.X() <= b.Z())
-	inY := (av.Y() >= b.Y()) && (av.Y() <= b.W())
+	av := v.Sub(e.position.Sub(e.BoundCenter()))
+	inX := (av.X() >= 0) && (av.X() <= b.X())
+	inY := (av.Y() >= 0) && (av.Y() <= b.Y())
 
 	return inX && inY
 }
@@ -100,8 +103,8 @@ func (e *BaseEntity) World() World {
 }
 
 func (e *BaseEntity) BoundCenter() mgl32.Vec2 {
-	x := 0.5 * (e.bounds.X() + e.bounds.Z())
-	y := 0.5 * (e.bounds.Y() + e.bounds.W())
+	x := 0.5 * (e.bounds.X())
+	y := 0.5 * (e.bounds.Y())
 
 	return mgl32.Vec2{x, y}
 }
@@ -110,10 +113,10 @@ func (e *BaseEntity) Center() mgl32.Vec2 {
 	return e.position.Add(e.BoundCenter())
 }
 
-func (*BaseEntity) KeyPressed(key string) {
+func (*BaseEntity) KeyPressed(key glfw.Key) {
 
 }
 
-func (*BaseEntity) MousePressed(key string, pos mgl32.Vec2) {
+func (*BaseEntity) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {
 
 }
