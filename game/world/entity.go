@@ -10,6 +10,7 @@ const (
 	BACKGROUND_LAYER = 0
 	SHIP_LAYER       = 1
 	PROJECTILE_LAYER = 2
+	GUI_LAYER        = 10
 )
 
 type Dir int8
