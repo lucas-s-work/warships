@@ -13,4 +13,5 @@ type World interface {
 	Window() *gl.Window
 	Context() *graphics.Context
 	EntitiesUnderPoint(mgl32.Vec2) []Entity
+	SetCamera(mgl32.Vec2)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
+	"github.com/lucas-s-work/warships/game/player"
 	"github.com/lucas-s-work/warships/game/ship"
 	"github.com/lucas-s-work/warships/game/world"
 )
@@ -20,7 +21,7 @@ type Game struct {
 	entities    []*entityState
 	newEntities []*entityState
 
-	player *Player
+	player *player.Player
 }
 
 type entityState struct {
@@ -36,7 +37,7 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 	}
 	g.createBackground()
 
-	p := CreatePlayer(window, g)
+	p := player.CreatePlayer(window, g)
 	g.player = p
 
 	b := ship.CreateBattleship(g, mgl32.Vec2{50, 50})

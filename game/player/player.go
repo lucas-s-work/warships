@@ -1,4 +1,4 @@
-package game
+package player
 
 import (
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -9,18 +9,24 @@ import (
 
 type Player struct {
 	selectedEntities []world.Entity
-	game             *Game
+	world            world.World
 	window           *gl.Window
 	camera           *Camera
+	gui              *PlayerGUI
 }
 
-func CreatePlayer(window *gl.Window, game *Game) *Player {
-	return &Player{
+func CreatePlayer(window *gl.Window, w world.World) *Player {
+	p := &Player{
 		selectedEntities: make([]world.Entity, 0),
 		window:           window,
-		game:             game,
-		camera:           CreateCamera(game),
+		world:            w,
+		camera:           CreateCamera(w),
 	}
+	gui := CreatePLayerGUI(p, window, w.Context())
+	p.gui = gui
+	p.gui.Init()
+
+	return p
 }
 
 /*
@@ -36,7 +42,13 @@ Entity selection and interaction
 */
 
 func (p *Player) selectEntities(pos mgl32.Vec2) {
-	p.selectedEntities = p.game.EntitiesUnderPoint(pos.Add(p.camera.Position()))
+	p.selectedEntities = p.world.EntitiesUnderPoint(pos.Add(p.camera.Position()))
+
+	if len(p.selectedEntities) == 1 {
+		p.gui.SetSelectedEntity(p.selectedEntities[0])
+	} else if len(p.selectedEntities) == 0 {
+		p.gui.SetSelectedEntity(nil)
+	}
 }
 
 /*
@@ -70,6 +82,7 @@ func (p *Player) checkInputs() {
 	mousePos, _ := gl.GetMouseInfo()
 	if gl.CheckMouseTapped(glfw.MouseButton1) {
 		p.selectEntities(mousePos)
+		p.gui.Click(mousePos)
 	}
 }
 
@@ -105,4 +118,5 @@ func (p *Player) handleKeyPress(key glfw.Key) {
 func (p *Player) Tick() {
 	p.checkInputs()
 	p.camera.Tick()
+	p.gui.Tick()
 }

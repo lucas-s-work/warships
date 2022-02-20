@@ -37,6 +37,7 @@ type Entity interface {
 	KeyPressed(key glfw.Key)
 	KeyTapped(key glfw.Key)
 	MousePressed(key glfw.MouseButton, pos mgl32.Vec2)
+	Sprite() mgl32.Vec4
 }
 
 type BaseEntity struct {
@@ -44,6 +45,7 @@ type BaseEntity struct {
 	position, camera mgl32.Vec2
 	world            World
 	bounds           mgl32.Vec2
+	texture          string
 	id               int
 }
 
@@ -53,6 +55,7 @@ func CreateBaseEntity(w World, position mgl32.Vec2, texture string, layer int, s
 		bounds:   bounds,
 		position: position,
 		camera:   w.CameraPosition(),
+		texture:  texture,
 	}
 	w.Context().AddJob(func() {
 		r, err := renderers.CreateRotationalRenderer(w.Window(), texture, int32(size)*6)
@@ -140,3 +143,7 @@ func (*BaseEntity) KeyPressed(key glfw.Key)                           {}
 func (*BaseEntity) KeyTapped(key glfw.Key)                            {}
 func (*BaseEntity) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {}
 func (*BaseEntity) OnClick()                                          {}
+func (b *BaseEntity) Sprite() mgl32.Vec4                              { return mgl32.Vec4{} }
+func (b *BaseEntity) TextureFile() string {
+	return b.texture
+}

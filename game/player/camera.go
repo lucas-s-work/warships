@@ -1,4 +1,4 @@
-package game
+package player
 
 import (
 	"math"
@@ -16,12 +16,12 @@ type Camera struct {
 	position mgl32.Vec2
 	holdTime int
 	moved    bool
-	game     *Game
+	world    world.World
 }
 
-func CreateCamera(game *Game) *Camera {
+func CreateCamera(world world.World) *Camera {
 	return &Camera{
-		game: game,
+		world: world,
 	}
 }
 
@@ -52,7 +52,7 @@ func (c *Camera) Move(dir world.Dir) {
 	c.holdTime++
 	c.position = c.position.Add(v)
 
-	c.game.SetCamera(c.position)
+	c.world.SetCamera(c.position)
 }
 
 func (c *Camera) Tick() {

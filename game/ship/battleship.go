@@ -26,6 +26,15 @@ const (
 	BattleshipTurnRate = 0.005
 )
 
+var (
+	BattleshipSprite = mgl32.Vec4{
+		0,
+		0,
+		BattleshipWidth,
+		BattleshipHeight,
+	}
+)
+
 func CreateBattleship(w world.World, position mgl32.Vec2) *Battleship {
 	e := world.CreateBaseEntity(
 		w,
@@ -94,4 +103,8 @@ func (b *Battleship) KeyTapped(key glfw.Key) {
 
 func (b *Battleship) MousePressed(key glfw.MouseButton, pos mgl32.Vec2) {
 
+}
+
+func (b *Battleship) Sprite() mgl32.Vec4 {
+	return BattleshipSprite
 }

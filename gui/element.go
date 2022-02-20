@@ -3,13 +3,12 @@ package gui
 import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
-	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
 	"github.com/lucas-s-work/warships/game/world"
 )
 
 type Element interface {
-	Renderer()
+	Renderer() *renderers.Translational
 	Click()
 	InBounds(mgl32.Vec2) bool
 	SetID(int)
@@ -18,10 +17,11 @@ type Element interface {
 	Active() bool
 	Delete()
 	Init()
+	Context() *graphics.Context
 }
 
 const (
-	BASE_ELEMENT_TEXTURE = "textures/gui/"
+	BASE_ELEMENT_TEXTURE = "textures/gui/base.png"
 )
 
 type BaseElement struct {
@@ -32,7 +32,7 @@ type BaseElement struct {
 	id         int
 }
 
-func CreateBaseElement(ctx *graphics.Context, window *gl.Window, dimensions mgl32.Vec4, size, layer int) *BaseElement {
+func CreateBaseElement(ctx *graphics.Context, dimensions mgl32.Vec4, size, layer int) *BaseElement {
 	element := &BaseElement{
 		ctx:        ctx,
 		dimensions: dimensions,
@@ -40,7 +40,7 @@ func CreateBaseElement(ctx *graphics.Context, window *gl.Window, dimensions mgl3
 	}
 
 	ctx.AddJob(func() {
-		r, err := renderers.CreateTranslationalRenderer(window, BASE_ELEMENT_TEXTURE, int32(size)*6)
+		r, err := renderers.CreateTranslationalRenderer(ctx.Window(), BASE_ELEMENT_TEXTURE, int32(size)*6)
 		if err != nil {
 			panic(err)
 		}
@@ -66,10 +66,11 @@ func (b *BaseElement) Renderer() *renderers.Translational {
 
 func (b *BaseElement) SetActive(a bool) {
 	b.active = a
+	b.renderer.SetActive(a)
 }
 
 func (b *BaseElement) InBounds(pos mgl32.Vec2) bool {
-	return (pos.X() >= b.dimensions.X() && pos.X() <= b.dimensions.W()) && (pos.Y() >= b.dimensions.Y() && pos.Y() <= b.dimensions.Z())
+	return (pos.X() >= b.dimensions.X() && pos.X() <= b.dimensions.X()+b.dimensions.Z()) && (pos.Y() >= b.dimensions.Y() && pos.Y() <= b.dimensions.Y()+b.dimensions.W())
 }
 
 func (b *BaseElement) Active() bool {
@@ -82,4 +83,8 @@ func (b *BaseElement) SetID(id int) {
 
 func (b *BaseElement) GetID() int {
 	return b.id
+}
+
+func (b *BaseElement) Context() *graphics.Context {
+	return b.ctx
 }
