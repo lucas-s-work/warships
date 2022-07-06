@@ -13,10 +13,10 @@ const (
 )
 
 type Camera struct {
-	position mgl32.Vec2
-	holdTime int
-	moved    bool
-	world    world.World
+	basePosition, position mgl32.Vec2
+	holdTime               int
+	moved                  bool
+	world                  world.World
 }
 
 func CreateCamera(world world.World) *Camera {
@@ -26,7 +26,21 @@ func CreateCamera(world world.World) *Camera {
 }
 
 func (c *Camera) Position() mgl32.Vec2 {
-	return c.position
+	return c.position.Add(c.basePosition)
+}
+
+/*
+Use a base position that can be used to reference the position of something that we are following
+we don't add this to our position directly so that the camera can still move around while following a target
+If we then clear the base position we should adjust our position to include this base position
+*/
+func (c *Camera) SetBasePosition(b mgl32.Vec2) {
+	c.basePosition = b
+}
+
+func (c *Camera) ClearBasePosition() {
+	c.position = c.position.Add(c.basePosition)
+	c.basePosition = mgl32.Vec2{0, 0}
 }
 
 func (c *Camera) Speed() float32 {
@@ -52,7 +66,11 @@ func (c *Camera) Move(dir world.Dir) {
 	c.holdTime++
 	c.position = c.position.Add(v)
 
-	c.world.SetCamera(c.position)
+	c.Update()
+}
+
+func (c *Camera) Update() {
+	c.world.SetCamera(c.Position())
 }
 
 func (c *Camera) Tick() {

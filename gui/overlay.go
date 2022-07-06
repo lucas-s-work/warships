@@ -12,8 +12,8 @@ type Overlay struct {
 	overlay *util.ListNode
 }
 
-func CreateOverlay(ctx *graphics.Context, pos mgl32.Vec2, layer int) *Overlay {
-	b := CreateBaseElement(ctx, mgl32.Vec4{pos.X(), pos.Y(), 0, 0}, 1, layer)
+func CreateOverlay(ctx *graphics.Context, position mgl32.Vec2, dimensions mgl32.Vec4, layer int) *Overlay {
+	b := CreateBaseElement(ctx, position, dimensions, 1, layer)
 	return &Overlay{
 		BaseElement: b,
 	}

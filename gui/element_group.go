@@ -1,6 +1,8 @@
 package gui
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ElementGroup struct {
 	gui      GUI
@@ -31,11 +33,32 @@ func (e *ElementGroup) AttachElement(el Element) error {
 	return nil
 }
 
-func (e *ElementGroup) Delete() {
+func (e *ElementGroup) DeleteElements() {
 	for _, el := range e.elements {
+		if el == nil {
+			continue
+		}
 		e.gui.DetachElement(el)
 		el.Delete()
 	}
+
+	e.elements = make([]Element, 0)
+}
+
+func (e *ElementGroup) Element(id int) Element {
+	return e.elements[id]
+}
+
+func (e *ElementGroup) Delete() {
+	for _, el := range e.elements {
+		if el == nil {
+			continue
+		}
+		e.gui.DetachElement(el)
+		el.Delete()
+	}
+
+	e.elements = make([]Element, 0)
 }
 
 func (e *ElementGroup) RelativeDimensions(dim mgl32.Vec4) mgl32.Vec4 {

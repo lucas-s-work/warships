@@ -6,7 +6,7 @@ import (
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
 	"github.com/lucas-s-work/warships/game/player"
-	"github.com/lucas-s-work/warships/game/ship"
+	"github.com/lucas-s-work/warships/game/vehicle/ship"
 	"github.com/lucas-s-work/warships/game/world"
 )
 
@@ -41,9 +41,15 @@ func CreateGame(ctx *graphics.Context, window *gl.Window) *Game {
 	g.player = p
 
 	b := ship.CreateBattleship(g, mgl32.Vec2{50, 50})
-	b2 := ship.CreateBattleship(g, mgl32.Vec2{100, 200})
+	// b2 := ship.CreateBattleship(g, mgl32.Vec2{100, 200})
+	// d := ship.CreateDestroyer(g, mgl32.Vec2{0, 0})
+	d2 := ship.CreateDestroyer(g, mgl32.Vec2{0, 0})
+
 	g.AttachEntity(b)
-	g.AttachEntity(b2)
+
+	g.AttachEntity(d2)
+	// g.AttachEntity(b2)
+	// g.AttachEntity(d)
 
 	return g
 }

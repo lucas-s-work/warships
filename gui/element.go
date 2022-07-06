@@ -4,6 +4,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
+	"github.com/lucas-s-work/gopengl3/util"
 	"github.com/lucas-s-work/warships/game/world"
 )
 
@@ -14,6 +15,7 @@ type Element interface {
 	SetID(int)
 	GetID() int
 	SetActive(bool)
+	SetClick(func())
 	Active() bool
 	Delete()
 	Init()
@@ -27,14 +29,18 @@ const (
 type BaseElement struct {
 	ctx        *graphics.Context
 	renderer   *renderers.Translational
+	position   mgl32.Vec2
 	dimensions mgl32.Vec4
 	active     bool
 	id         int
+	sprite     *util.ListNode
+	clickFunc  func()
 }
 
-func CreateBaseElement(ctx *graphics.Context, dimensions mgl32.Vec4, size, layer int) *BaseElement {
+func CreateBaseElement(ctx *graphics.Context, position mgl32.Vec2, dimensions mgl32.Vec4, size, layer int) *BaseElement {
 	element := &BaseElement{
 		ctx:        ctx,
+		position:   position,
 		dimensions: dimensions,
 		active:     true,
 	}
@@ -45,19 +51,44 @@ func CreateBaseElement(ctx *graphics.Context, dimensions mgl32.Vec4, size, layer
 			panic(err)
 		}
 		ctx.Attach(r, world.GUI_LAYER+layer)
-		r.SetTranslation(dimensions.Vec2())
+		r.SetTranslation(position)
 		element.renderer = r
 	})
 
 	return element
 }
 
-func (*BaseElement) Init() {}
+func (e *BaseElement) Init() {
+	e.Context().AddJob(func() {
+		v, t, err := graphics.Rectangle(
+			e.dimensions[0], e.dimensions[1], e.dimensions[2], e.dimensions[3], 0, 0, 1, 1, e.Renderer().Texture())
+		if err != nil {
+			panic(err)
+		}
+		r := e.Renderer()
+		a, err := r.AllocateAndSetVertices(v, t)
+		if err != nil {
+			panic(err)
+		}
+		e.sprite = a
+		r.Update()
+	})
+}
 func (b *BaseElement) Delete() {
 	b.ctx.AddJob(func() {
 		b.ctx.Detach(b.renderer)
 		b.renderer = nil
 	})
+}
+
+func (b *BaseElement) SetClick(f func()) {
+	b.clickFunc = f
+}
+
+func (b *BaseElement) Click() {
+	if b.clickFunc != nil {
+		b.clickFunc()
+	}
 }
 
 func (b *BaseElement) Renderer() *renderers.Translational {
@@ -70,7 +101,8 @@ func (b *BaseElement) SetActive(a bool) {
 }
 
 func (b *BaseElement) InBounds(pos mgl32.Vec2) bool {
-	return (pos.X() >= b.dimensions.X() && pos.X() <= b.dimensions.X()+b.dimensions.Z()) && (pos.Y() >= b.dimensions.Y() && pos.Y() <= b.dimensions.Y()+b.dimensions.W())
+	pos = pos.Sub(b.position)
+	return (pos.X() >= b.dimensions[0] && pos.X() <= b.dimensions.X()+b.dimensions.Z()) && (pos.Y() >= b.dimensions.Y() && pos.Y() <= b.dimensions.Y()+b.dimensions.W())
 }
 
 func (b *BaseElement) Active() bool {

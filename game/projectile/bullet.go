@@ -1,11 +1,10 @@
 package projectile
 
 import (
-	"fmt"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/warships/game/world"
+	"github.com/lucas-s-work/warships/renderers"
 )
 
 type Bullet struct {
@@ -13,17 +12,20 @@ type Bullet struct {
 }
 
 const (
-	BulletTexture       = "./textures/projectiles/BulletProjectile.png"
-	BulletSpeed         = 100
-	BulletInitialHeight = 10
+	BulletTexture       = "./textures/projectiles/Bullet.png"
+	BulletSpeed         = 5.0
+	BulletInitialHeight = 25 // Spawn above the projectile hit detection height to avoid colliding with parent
+	BulletInitialZVel   = 3
 )
 
-func CreateBullet(w world.World, velocity mgl32.Vec3, position mgl32.Vec2) *Bullet {
+func CreateBullet(w world.World, dir mgl32.Vec2, position mgl32.Vec2) *Bullet {
+	velocity := dir.Normalize().Mul(BulletSpeed)
+
 	return &Bullet{
 		BaseProjectile: CreateBaseProjectile(
 			w,
 			BulletTexture,
-			velocity,
+			mgl32.Vec3{velocity.X(), velocity.Y(), BulletInitialZVel},
 			mgl32.Vec3{position.X(), position.Y(), BulletInitialHeight},
 			bulletOnCollision,
 		),
@@ -35,11 +37,11 @@ func (b *Bullet) Init() {
 
 	startingPos := b.StartingPosition()
 	w.Context().AddJob(func() {
-		v, t, err := graphics.Rectangle(0, 0, 13, 21, 0, 0, 13, 21, b.Renderer().Texture())
+		v, t, err := graphics.Rectangle(0, 0, 13, 5, 0, 0, 13, 5, b.Renderer().Texture())
 		if err != nil {
 			panic(err)
 		}
-		r := b.Renderer()
+		r := b.Renderer().(*renderers.Scaled)
 		_, err = r.AllocateAndSetVertices(v, t)
 		if err != nil {
 			panic(err)
@@ -49,6 +51,8 @@ func (b *Bullet) Init() {
 	})
 }
 
-func bulletOnCollision(e world.Entity) {
-	fmt.Println(e)
+func bulletOnCollision(e world.Entity) bool {
+	e.OnCollision(15)
+
+	return true
 }

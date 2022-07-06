@@ -10,7 +10,7 @@ const (
 )
 
 type GUI interface {
-	Click(pos mgl32.Vec2)
+	Click(pos mgl32.Vec2) bool
 	Tick()
 	Delete()
 	AttachElement(Element) error
@@ -31,19 +31,25 @@ func CreateBaseGUI(size int) *BaseGUI {
 	}
 }
 
-func (b *BaseGUI) Click(pos mgl32.Vec2) {
+func (b *BaseGUI) Click(pos mgl32.Vec2) bool {
 	for _, el := range b.elements {
 		if el == nil || !el.Active() {
 			continue
 		}
 		if el.InBounds(pos) {
 			el.Click()
+
+			return true
 		}
 	}
+
+	return false
 }
 
-func (b *BaseGUI) AttachElement(el Element) {
+func (b *BaseGUI) AttachElement(el Element) error {
 	b.newElements = append(b.newElements, el)
+
+	return nil
 }
 
 func (b *BaseGUI) DetachElement(el Element) {
@@ -73,6 +79,7 @@ func (b *BaseGUI) Tick() {
 
 	if len(b.newElements) > 0 {
 		for _, e := range b.newElements {
+
 			found := false
 			for i, el := range b.elements {
 				if el == nil {
