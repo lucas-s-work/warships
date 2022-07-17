@@ -5,6 +5,7 @@ import (
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/warships/game/vehicle"
 	"github.com/lucas-s-work/warships/game/vehicle/module"
+	"github.com/lucas-s-work/warships/game/world"
 	"github.com/lucas-s-work/warships/gui"
 )
 
@@ -67,6 +68,14 @@ func (e *shipElement) Modules() []module.Module {
 
 func (e *shipElement) SelectedModule() module.Module {
 	return e.modules.SelectedModule()
+}
+
+func (e *shipElement) OnFire(w world.World, event world.KeyInputEvent) {
+	if mod := e.SelectedModule(); mod != nil {
+		if wep, ok := mod.(module.Weapon); ok {
+			wep.OnFire(w, event)
+		}
+	}
 }
 
 func (e *shipElement) Delete() {

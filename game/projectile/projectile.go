@@ -21,8 +21,10 @@ const (
 type BaseProjectile struct {
 	*world.ScaledBaseEntity
 	world         world.World
+	startPosition mgl32.Vec3
 	worldPosition mgl32.Vec3
 	velocity      mgl32.Vec3
+	t             float32
 	onCollision   func(world.Entity) bool
 }
 
@@ -30,8 +32,10 @@ func CreateBaseProjectile(w world.World, texture string, velocity, position mgl3
 	p := &BaseProjectile{
 		ScaledBaseEntity: world.CreateScaledBaseEntity(w, position.Vec2(), texture, world.PROJECTILE_LAYER, 1, mgl32.Vec2{ProjectileWidth, ProjectileHeight}),
 		world:            w,
+		startPosition:    position,
 		worldPosition:    position,
 		velocity:         velocity,
+		t:                0,
 		onCollision:      onCollision,
 	}
 
@@ -69,8 +73,12 @@ func (b *BaseProjectile) Velocity() mgl32.Vec3 {
 }
 
 func (b *BaseProjectile) UpdatePosition() {
-	b.worldPosition = b.worldPosition.Add(b.velocity)
-	b.velocity = b.velocity.Sub(mgl32.Vec3{0, 0, Gravity})
+	b.t += 1
+	b.worldPosition = mgl32.Vec3{
+		b.velocity.X()*b.t + b.startPosition.X(),
+		b.velocity.Y()*b.t + b.startPosition.Y(),
+		b.startPosition.Z() + b.velocity.Z()*b.t - Gravity*b.t*b.t,
+	}
 	b.SetPosition(b.worldPosition.Vec2())
 	b.SetScale(float32(math.Max(float64(1.0-b.worldPosition.Z()/250.0), 0.3)))
 }

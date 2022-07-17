@@ -51,11 +51,11 @@ func CreateDestroyer(w world.World, position mgl32.Vec2) *Destroyer {
 		BaseShip: s,
 	}
 
-	frontTurret := module.CreateSmallTurret(w, mgl32.Vec2{0, DestroyerForwardModuleY}, d)
+	frontTurret := module.CreateMissileTurret(w, mgl32.Vec2{0, DestroyerForwardModuleY}, d)
 	d.AttachModule(0, frontTurret)
 	w.AttachEntity(frontTurret)
 
-	rearTurret := module.CreateSmallTurret(w, mgl32.Vec2{0, DestroyerRearModuleY}, d)
+	rearTurret := module.CreateMissileTurret(w, mgl32.Vec2{0, DestroyerRearModuleY}, d)
 	d.AttachModule(1, rearTurret)
 	w.AttachEntity(rearTurret)
 

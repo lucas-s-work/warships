@@ -17,7 +17,7 @@ type Module interface {
 	Texture() string
 	Health() int
 	Repair(int)
-	SetAim(mgl32.Vec2)
+	SetTarget(mgl32.Vec2)
 	Destroyed() bool
 }
 
@@ -65,7 +65,7 @@ func (b *BaseModule) SetAngle(angle float64) {
 	b.SetRotation2(float32(b.Angle()), b.RelativePosition().Mul(-1).Add(b.BoundCenter()))
 }
 
-func (b *BaseModule) SetAim(aim mgl32.Vec2) {
+func (b *BaseModule) SetTarget(aim mgl32.Vec2) {
 	d := aim.Sub(b.Position())
 	b.SetRotation(-float32(math.Atan2(float64(d.X()), float64(d.Y()))+b.Angle()), b.aimCenter)
 }

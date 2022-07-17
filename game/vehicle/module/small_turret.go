@@ -66,10 +66,11 @@ func (s *SmallTurret) OnFire(w world.World, event world.KeyInputEvent) {
 		return
 	}
 
-	vel := event.MousePos.Add(event.CameraPos).Sub(s.Position())
-	s.ammoCount -= 1
-	b := projectile.CreateBullet(w, vel, s.Position())
-	w.AttachEntity(b)
+	target := event.MousePos.Add(event.CameraPos)
+	if b := projectile.CreateBullet(w, target, s.Position()); b != nil {
+		s.ammoCount -= 1
+		w.AttachEntity(b)
+	}
 }
 
 func (s *SmallTurret) Sprite() mgl32.Vec4 {

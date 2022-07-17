@@ -137,13 +137,7 @@ func (p *Player) keyTapSelectedEntities(event world.KeyInputEvent) {
 		p.selectedEntity.KeyTapped(event)
 	}
 
-	// if mod := p.gui.SelectedModule(); mod != nil {
-	// 	if event.Key == glfw.KeySpace {
-	// 		if wep, ok := mod.(module.Weapon); ok {
-	// 			wep.OnFire(p.world, event)
-	// 		}
-	// 	}
-	// }
+	p.gui.OnFire(p.world, event)
 }
 
 func (p *Player) handleKeyPress(event world.KeyInputEvent) {
