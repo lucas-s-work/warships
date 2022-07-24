@@ -83,7 +83,7 @@ func (b *BaseShip) UpdatePosition() {
 			continue
 		}
 
-		mod.SetPosition(b.Position().Add(b.Velocity()).Add(mod.RelativePosition()))
+		mod.SetPosition(b.Position().Add(b.Velocity()).Add(mod.RelativePosition()).Add(mod.Offset()))
 	}
 }
 

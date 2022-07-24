@@ -1,8 +1,6 @@
 package module
 
 import (
-	"fmt"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/warships/game/projectile"
 	"github.com/lucas-s-work/warships/game/world"
@@ -58,7 +56,6 @@ func (s *SmallTurret) Health() int {
 }
 
 func (s *SmallTurret) Reload(int) {
-	fmt.Println("Reloading")
 }
 
 func (s *SmallTurret) OnFire(w world.World, event world.KeyInputEvent) {

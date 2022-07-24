@@ -1,7 +1,6 @@
 package module
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -19,6 +18,7 @@ type Module interface {
 	Repair(int)
 	SetTarget(mgl32.Vec2)
 	Destroyed() bool
+	Offset() mgl32.Vec2
 }
 
 type Weapon interface {
@@ -44,6 +44,7 @@ type BaseModule struct {
 	parent    world.Entity
 	angle     float64
 	aimCenter mgl32.Vec2
+	offset    mgl32.Vec2
 	health    int
 }
 
@@ -63,6 +64,14 @@ func (b *BaseModule) SetAngle(angle float64) {
 	// rather than relative to our center
 	b.angle = angle
 	b.SetRotation2(float32(b.Angle()), b.RelativePosition().Mul(-1).Add(b.BoundCenter()))
+}
+
+func (b *BaseModule) SetOffset(offset mgl32.Vec2) {
+	b.offset = offset
+}
+
+func (b *BaseModule) Offset() mgl32.Vec2 {
+	return b.offset
 }
 
 func (b *BaseModule) SetTarget(aim mgl32.Vec2) {
@@ -109,7 +118,6 @@ func (b *BaseModule) Destroyed() bool {
 }
 
 func (*BaseModule) Repair(int) {
-	fmt.Println("Repaired")
 }
 
 func (*BaseModule) EntityType() world.EntityType {
@@ -118,4 +126,8 @@ func (*BaseModule) EntityType() world.EntityType {
 
 func (b *BaseModule) Parent() world.Entity {
 	return b.parent
+}
+
+func (b *BaseModule) AimCenter() mgl32.Vec2 {
+	return b.aimCenter
 }
